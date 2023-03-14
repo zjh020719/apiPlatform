@@ -8,16 +8,12 @@
         <version>2.7.9</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <modules>
-        <module>fsapi_backend</module>
-        <module>fsapi_gateway</module>
-    </modules>
     <groupId>com.xxfs</groupId>
     <artifactId>fsapi_parent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>fsapi_parent</name>
     <description>fsapi_parent</description>
-    <packaging>pom</packaging>
+
     <properties>
         <java.version>1.8</java.version>
     </properties>
