@@ -1,6 +1,6 @@
-package com.xxfs.fsapicommon.model.vo;
+package com.xxfs.fsapibackend.model.vo;
 
-import com.xxfs.fsapicommon.model.entity.Post;
+import com.xxfs.fsapibackend.model.entity.Post;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
