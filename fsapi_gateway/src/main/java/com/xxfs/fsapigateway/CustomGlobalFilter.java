@@ -1,13 +1,18 @@
 package com.xxfs.fsapigateway;
 
 
+import com.auth0.jwt.exceptions.AlgorithmMismatchException;
+import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.xxfs.fsapiclientsdk.utils.SignUtils;
 import com.xxfs.fsapicommon.model.entity.InterfaceInfo;
 import com.xxfs.fsapicommon.model.entity.User;
 import com.xxfs.fsapicommon.service.InnerInterfaceInfoService;
 import com.xxfs.fsapicommon.service.InnerUserInterfaceInfoService;
 import com.xxfs.fsapicommon.service.InnerUserService;
+import com.xxfs.fsapigateway.utils.JWTUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.reactivestreams.Publisher;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -53,74 +58,113 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        // 1. 请求日志
-        ServerHttpRequest request = exchange.getRequest();
-        String path = INTERFACE_HOST + request.getPath().value();
-        String method = request.getMethod().toString();
-        log.info("请求唯一标识：" + request.getId());
-        log.info("请求路径：" + path);
-        log.info("请求方法：" + method);
-        log.info("请求参数：" + request.getQueryParams());
-        String sourceAddress = request.getLocalAddress().getHostString();
-        log.info("请求来源地址：" + sourceAddress);
-        log.info("请求来源地址：" + request.getRemoteAddress());
+        //获取token
         ServerHttpResponse response = exchange.getResponse();
-        // 2. 访问控制 - 黑白名单
-        if (!IP_WHITE_LIST.contains(sourceAddress)) {
-            response.setStatusCode(HttpStatus.FORBIDDEN);
-            return response.setComplete();
-        }
-        // 3. 用户鉴权（判断 ak、sk 是否合法）
+        ServerHttpRequest request = exchange.getRequest();
         HttpHeaders headers = request.getHeaders();
         String accessKey = headers.getFirst("accessKey");
-        String nonce = headers.getFirst("nonce");
-        String timestamp = headers.getFirst("timestamp");
-        String sign = headers.getFirst("sign");
-        String body = headers.getFirst("body");
-        // todo 实际情况应该是去数据库中查是否已分配给用户
+        String requestPath = request.getPath().value();
+
+        //  实际情况应该是去数据库中查是否已分配给用户
         User invokeUser = null;
-        try {
-            invokeUser = innerUserService.getInvokeUser(accessKey);
-        } catch (Exception e) {
-            log.error("getInvokeUser error", e);
+        if (accessKey != null) {
+            try {
+                invokeUser = innerUserService.getInvokeUser(accessKey);
+            } catch (Exception e) {
+                log.error("getInvokeUser error", e);
+            }
         }
-        if (invokeUser == null) {
-            return handleNoAuth(response);
+
+
+        if (!"/api/backend/user/login".equals(requestPath) && !"/api/backend/user/register".equals(requestPath) && !"/api/backend/user/logout".equals(requestPath)) {
+            String token = exchange.getRequest().getHeaders().getFirst("Authentication");
+            if (StringUtils.isBlank(token)) {
+                log.error("token为空");
+                //没有token
+                return handleNoAuth(response);
+            } else {
+                //有token
+                try {
+                    JWTUtils.verify(token, invokeUser.getSecretKey());
+                } catch (SignatureVerificationException e) {
+                    log.error("无效签名！ 错误 ->", e);
+                    return handleNoAuth(response);
+                } catch (TokenExpiredException e) {
+                    log.error("token过期！ 错误 ->", e);
+                    return handleNoAuth(response);
+                } catch (AlgorithmMismatchException e) {
+                    log.error("token算法不一致！ 错误 ->", e);
+                    return handleNoAuth(response);
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
+                    return handleNoAuth(response);
+                }
+            }
         }
+
+
+        if (requestPath.matches("^/api/interface.*")) {
+            // 1. 请求日志
+            String path = INTERFACE_HOST + request.getPath().value();
+            String method = request.getMethod().toString();
+            log.info("请求唯一标识：" + request.getId());
+            log.info("请求路径：" + path);
+            log.info("请求方法：" + method);
+            log.info("请求参数：" + request.getQueryParams());
+            String sourceAddress = request.getLocalAddress().getHostString();
+            log.info("请求来源地址：" + sourceAddress);
+            log.info("请求来源地址：" + request.getRemoteAddress());
+
+            // 2. 访问控制 - 黑白名单
+            if (!IP_WHITE_LIST.contains(sourceAddress)) {
+                response.setStatusCode(HttpStatus.FORBIDDEN);
+                return response.setComplete();
+            }
+            // 3. 用户鉴权（判断 ak、sk 是否合法）
+            String nonce = headers.getFirst("nonce");
+            String timestamp = headers.getFirst("timestamp");
+            String sign = headers.getFirst("sign");
+            String body = headers.getFirst("body");
+
+            if (invokeUser == null) {
+                return handleNoAuth(response);
+            }
 //        if (!"yupi".equals(accessKey)) {
 //            return handleNoAuth(response);
 //        }
-        if (Long.parseLong(nonce) > 10000L) {
-            return handleNoAuth(response);
+            if (Long.parseLong(nonce) > 10000L || Long.parseLong(nonce) <= 0) {
+                return handleNoAuth(response);
+            }
+            // 时间和当前时间不能超过 5 分钟
+            Long currentTime = System.currentTimeMillis() / 1000;
+            final Long FIVE_MINUTES = 60 * 5L;
+            if ((currentTime - Long.parseLong(timestamp)) >= FIVE_MINUTES) {
+                return handleNoAuth(response);
+            }
+            // 实际情况中是从数据库中查出 secretKey
+            String secretKey = invokeUser.getSecretKey();
+            String serverSign = SignUtils.genSign(body, secretKey);
+            if (sign == null || !sign.equals(serverSign)) {
+                return handleNoAuth(response);
+            }
+            // 4. 请求的模拟接口是否存在，以及请求方法是否匹配
+            InterfaceInfo interfaceInfo = null;
+            try {
+                interfaceInfo = innerInterfaceInfoService.getInterfaceInfo(path, method);
+            } catch (Exception e) {
+                log.error("getInterfaceInfo error", e);
+            }
+            if (interfaceInfo == null) {
+                return handleNoAuth(response);
+            }
+            // todo 是否还有调用次数
+            // 5. 请求转发，调用模拟接口 + 响应日志
+            //        Mono<Void> filter = chain.filter(exchange);
+            //        return filter;
+            return handleResponse(exchange, chain, interfaceInfo.getId(), invokeUser.getId());
         }
-        // 时间和当前时间不能超过 5 分钟
-        Long currentTime = System.currentTimeMillis() / 1000;
-        final Long FIVE_MINUTES = 60 * 5L;
-        if ((currentTime - Long.parseLong(timestamp)) >= FIVE_MINUTES) {
-            return handleNoAuth(response);
-        }
-        // 实际情况中是从数据库中查出 secretKey
-        String secretKey = invokeUser.getSecretKey();
-        String serverSign = SignUtils.genSign(body, secretKey);
-        if (sign == null || !sign.equals(serverSign)) {
-            return handleNoAuth(response);
-        }
-        // 4. 请求的模拟接口是否存在，以及请求方法是否匹配
-        InterfaceInfo interfaceInfo = null;
-        try {
-            interfaceInfo = innerInterfaceInfoService.getInterfaceInfo(path, method);
-        } catch (Exception e) {
-            log.error("getInterfaceInfo error", e);
-        }
-        if (interfaceInfo == null) {
-            return handleNoAuth(response);
-        }
-        // todo 是否还有调用次数
-        // 5. 请求转发，调用模拟接口 + 响应日志
-        //        Mono<Void> filter = chain.filter(exchange);
-        //        return filter;
-        return handleResponse(exchange, chain, interfaceInfo.getId(), invokeUser.getId());
 
+        return chain.filter(exchange);
     }
 
     /**

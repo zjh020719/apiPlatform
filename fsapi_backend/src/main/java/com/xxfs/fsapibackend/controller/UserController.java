@@ -9,6 +9,7 @@ import com.xxfs.fsapibackend.common.ErrorCode;
 import com.xxfs.fsapibackend.common.ResultUtils;
 import com.xxfs.fsapibackend.exception.BusinessException;
 import com.xxfs.fsapibackend.model.dto.user.*;
+import com.xxfs.fsapibackend.model.vo.LoginVO;
 import com.xxfs.fsapibackend.model.vo.UserVO;
 import com.xxfs.fsapibackend.service.UserService;
 import com.xxfs.fsapicommon.model.entity.User;
@@ -64,7 +65,7 @@ public class UserController {
      * @return
      */
     @PostMapping("/login")
-    public BaseResponse<User> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
+    public BaseResponse<LoginVO> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
         if (userLoginRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -73,7 +74,7 @@ public class UserController {
         if (StringUtils.isAnyBlank(userAccount, userPassword)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        User user = userService.userLogin(userAccount, userPassword, request);
+        LoginVO user = userService.userLogin(userAccount, userPassword, request);
         return ResultUtils.success(user);
     }
 

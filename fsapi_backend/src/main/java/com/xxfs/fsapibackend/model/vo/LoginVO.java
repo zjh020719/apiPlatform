@@ -2,16 +2,10 @@ package com.xxfs.fsapibackend.model.vo;
 
 import lombok.Data;
 
-import java.io.Serializable;
 import java.util.Date;
 
-/**
- * 用户视图
- *
- * @TableName user
- */
 @Data
-public class UserVO implements Serializable {
+public class LoginVO {
     /**
      * id
      */
@@ -42,16 +36,24 @@ public class UserVO implements Serializable {
      */
     private String userRole;
 
+
+    /**
+     * 签名 accessKey
+     */
+    private String accessKey;
+
+    /**
+     * 签名 secretKey
+     */
+    private String secretKey;
+
     /**
      * 创建时间
      */
     private Date createTime;
 
     /**
-     * 更新时间
+     * token
      */
-    private Date updateTime;
-
-
-    private static final long serialVersionUID = 1L;
+    private String token;
 }

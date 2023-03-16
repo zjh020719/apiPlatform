@@ -126,7 +126,7 @@
     <!--开发环境:打印控制台-->
     <springProfile name="dev">
         <!--可以输出项目中的debug日志，包括mybatis的sql日志-->
-        <logger name="com.yupi" level="INFO"/>
+        <logger name="com.xxfs" level="INFO"/>
         <logger name="io.lettuce.core.protocol" level="ERROR">
             <appender-ref ref="ERROR_FILE"/>
         </logger>
