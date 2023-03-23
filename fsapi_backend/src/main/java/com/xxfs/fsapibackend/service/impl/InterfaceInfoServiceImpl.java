@@ -1,10 +1,10 @@
 package com.xxfs.fsapibackend.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.xxfs.fsapibackend.common.ErrorCode;
 import com.xxfs.fsapibackend.exception.BusinessException;
 import com.xxfs.fsapibackend.mapper.InterfaceInfoMapper;
 import com.xxfs.fsapibackend.service.InterfaceInfoService;
+import com.xxfs.fsapicommon.common.ErrorCode;
 import com.xxfs.fsapicommon.model.entity.InterfaceInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;

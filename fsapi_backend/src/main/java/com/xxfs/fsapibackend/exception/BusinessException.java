@@ -1,6 +1,6 @@
 package com.xxfs.fsapibackend.exception;
 
-import com.xxfs.fsapibackend.common.ErrorCode;
+import com.xxfs.fsapicommon.common.ErrorCode;
 
 /**
  * 自定义异常类

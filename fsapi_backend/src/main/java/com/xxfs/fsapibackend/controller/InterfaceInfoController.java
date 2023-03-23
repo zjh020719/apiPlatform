@@ -4,8 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.gson.Gson;
 import com.xxfs.fsapibackend.annotation.AuthCheck;
-import com.xxfs.fsapibackend.common.*;
-import com.xxfs.fsapibackend.constant.CommonConstant;
 import com.xxfs.fsapibackend.exception.BusinessException;
 import com.xxfs.fsapibackend.model.dto.interfaceinfo.InterfaceInfoAddRequest;
 import com.xxfs.fsapibackend.model.dto.interfaceinfo.InterfaceInfoInvokeRequest;
@@ -15,6 +13,8 @@ import com.xxfs.fsapibackend.model.enums.InterfaceInfoStatusEnum;
 import com.xxfs.fsapibackend.service.InterfaceInfoService;
 import com.xxfs.fsapibackend.service.UserService;
 import com.xxfs.fsapiclientsdk.client.FsApiClient;
+import com.xxfs.fsapicommon.common.*;
+import com.xxfs.fsapicommon.constant.CommonConstant;
 import com.xxfs.fsapicommon.model.entity.InterfaceInfo;
 import com.xxfs.fsapicommon.model.entity.User;
 import lombok.extern.slf4j.Slf4j;
@@ -242,7 +242,7 @@ public class InterfaceInfoController {
      * @param request
      * @return
      */
-    @PostMapping("/offline")
+    @PostMapping("/outline")
     @AuthCheck(mustRole = "admin")
     public BaseResponse<Boolean> offlineInterfaceInfo(@RequestBody IdRequest idRequest,
                                                       HttpServletRequest request) {
@@ -271,28 +271,35 @@ public class InterfaceInfoController {
      * @return
      */
     @PostMapping("/invoke")
-    public BaseResponse<Object> invokeInterfaceInfo(@RequestBody InterfaceInfoInvokeRequest interfaceInfoInvokeRequest,
-                                                    HttpServletRequest request) {
+    public BaseResponse<Object> invokeInterfaceInfo(@RequestBody InterfaceInfoInvokeRequest interfaceInfoInvokeRequest, HttpServletRequest request) {
+        // 判断请求体是否为空，以及ID是否大于0
         if (interfaceInfoInvokeRequest == null || interfaceInfoInvokeRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
+        // 从请求体中获取ID和用户请求参数
         long id = interfaceInfoInvokeRequest.getId();
         String userRequestParams = interfaceInfoInvokeRequest.getUserRequestParams();
-        // 判断是否存在
+        // 判断接口信息是否存在
         InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(id);
         if (oldInterfaceInfo == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
+        // 判断接口状态是否为下线状态
         if (oldInterfaceInfo.getStatus() == InterfaceInfoStatusEnum.OFFLINE.getValue()) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口已关闭");
         }
+        // 获取当前登录用户的密钥信息
         User loginUser = userService.getLoginUser(request);
         String accessKey = loginUser.getAccessKey();
         String secretKey = loginUser.getSecretKey();
+        // 创建一个客户端实例，使用密钥信息
         FsApiClient tempClient = new FsApiClient(accessKey, secretKey);
         Gson gson = new Gson();
+        // 将用户请求参数转换为 com.xxfs.fsapiclientsdk.model.User 对象
         com.xxfs.fsapiclientsdk.model.User user = gson.fromJson(userRequestParams, com.xxfs.fsapiclientsdk.model.User.class);
+        // 调用 API 方法，使用用户对象来获取用户名
         String usernameByPost = tempClient.getUsernameByPost(user);
+        // 返回包含用户名的成功响应
         return ResultUtils.success(usernameByPost);
     }
 

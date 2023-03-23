@@ -1,6 +1,6 @@
 package com.xxfs.fsapibackend.model.dto.userinterfaceinfo;
 
-import com.xxfs.fsapibackend.common.PageRequest;
+import com.xxfs.fsapicommon.common.PageRequest;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

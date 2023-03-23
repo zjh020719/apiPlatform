@@ -72,4 +72,17 @@ public class FsApiClient {
         System.out.println(result);
         return result;
     }
+
+    // TODO: 2023/3/22 邮件发送
+    public boolean sendEmail(User user) {
+        String json = JSONUtil.toJsonStr(user);
+        HttpResponse httpResponse = HttpRequest.post(GATEWAY_HOST + "/api/interface/mail/sendMail")
+                .addHeaders(getHeaderMap(json))
+                .body(json)
+                .execute();
+        System.out.println(httpResponse.getStatus());
+        String result = httpResponse.body();
+        System.out.println(result);
+        return true;
+    }
 }

@@ -2,9 +2,9 @@ package com.xxfs.fsapibackend.aop;
 
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.xxfs.fsapibackend.annotation.AuthCheck;
-import com.xxfs.fsapibackend.common.ErrorCode;
 import com.xxfs.fsapibackend.exception.BusinessException;
 import com.xxfs.fsapibackend.service.UserService;
+import com.xxfs.fsapicommon.common.ErrorCode;
 import com.xxfs.fsapicommon.model.entity.User;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;

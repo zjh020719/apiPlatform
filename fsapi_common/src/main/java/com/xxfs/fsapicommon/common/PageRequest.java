@@ -1,6 +1,7 @@
-package com.xxfs.fsapibackend.common;
+package com.xxfs.fsapicommon.common;
 
-import com.xxfs.fsapibackend.constant.CommonConstant;
+
+import com.xxfs.fsapicommon.constant.CommonConstant;
 import lombok.Data;
 
 /**

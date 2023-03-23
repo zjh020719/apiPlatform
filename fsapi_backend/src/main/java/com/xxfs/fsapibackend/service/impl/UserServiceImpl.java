@@ -4,12 +4,12 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.xxfs.fsapibackend.common.ErrorCode;
 import com.xxfs.fsapibackend.exception.BusinessException;
 import com.xxfs.fsapibackend.mapper.UserMapper;
 import com.xxfs.fsapibackend.model.vo.LoginVO;
 import com.xxfs.fsapibackend.service.UserService;
 import com.xxfs.fsapibackend.utils.JWTUtils;
+import com.xxfs.fsapicommon.common.ErrorCode;
 import com.xxfs.fsapicommon.model.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -20,8 +20,8 @@ import org.springframework.util.DigestUtils;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import static com.xxfs.fsapibackend.constant.UserConstant.ADMIN_ROLE;
-import static com.xxfs.fsapibackend.constant.UserConstant.USER_LOGIN_STATE;
+import static com.xxfs.fsapicommon.constant.UserConstant.ADMIN_ROLE;
+import static com.xxfs.fsapicommon.constant.UserConstant.USER_LOGIN_STATE;
 
 
 /**
@@ -83,6 +83,37 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             }
             return user.getId();
         }
+    }
+
+    /**
+     * 用户注册
+     *
+     * @param userAccount  学号
+     * @param userPassword 密码
+     * @return 新用户 id
+     */
+    @Override
+    public long newUserRegister(String userAccount, String userPassword) {
+        //TODO 查询是否已经存在
+        //TODO 调用爬虫接口校验用户学号密码是否正确
+        //TODO 创建用户
+        //TODO 返回注册信息
+        return 0;
+    }
+
+    /**
+     * 修改用户accessKey
+     *
+     * @param userAccount  用户账户
+     * @param userPassword 用户密码
+     * @return 用户新accessKey
+     */
+    @Override
+    public long changeUserAccessKey(String userAccount, String userPassword) {
+        // TODO 验证用户密码是否正确
+        // TODO 随机生成AccessKey并修改数据库
+        // TODO 返回新AccessKey
+        return 0;
     }
 
     @Override

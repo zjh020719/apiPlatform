@@ -2,6 +2,8 @@ package com.xxfs.fsapiinterface.controller;
 
 
 import com.xxfs.fsapiclientsdk.model.User;
+import com.xxfs.fsapicommon.common.BaseResponse;
+import com.xxfs.fsapicommon.common.ResultUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,7 +29,7 @@ public class NameController {
     }
 
     @PostMapping("/user")
-    public String getUsernameByPost(@RequestBody User user, HttpServletRequest request) {
+    public BaseResponse<String> getUsernameByPost(@RequestBody User user, HttpServletRequest request) {
 //        String accessKey = request.getHeader("accessKey");
 //        String nonce = request.getHeader("nonce");
 //        String timestamp = request.getHeader("timestamp");
@@ -51,6 +53,6 @@ public class NameController {
 //        }
         // todo 调用次数 + 1 invokeCount
         String result = "POST 用户名字是" + user.getUsername();
-        return result;
+        return ResultUtils.success(result);
     }
 }

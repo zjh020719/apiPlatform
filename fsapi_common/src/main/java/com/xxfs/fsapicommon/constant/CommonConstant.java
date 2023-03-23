@@ -1,4 +1,4 @@
-package com.xxfs.fsapibackend.constant;
+package com.xxfs.fsapicommon.constant;
 
 /**
  * 通用常量

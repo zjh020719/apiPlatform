@@ -105,10 +105,10 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
 
         if (requestPath.matches("^/api/interface.*")) {
             // 1. 请求日志
-            String path = INTERFACE_HOST + request.getPath().value();
-            String method = request.getMethod().toString();
+            requestPath = requestPath.replaceFirst("/api/interface", "");
+            String method = request.getMethod().toString().toLowerCase();
             log.info("请求唯一标识：" + request.getId());
-            log.info("请求路径：" + path);
+            log.info("请求路径：" + requestPath);
             log.info("请求方法：" + method);
             log.info("请求参数：" + request.getQueryParams());
             String sourceAddress = request.getLocalAddress().getHostString();
@@ -138,6 +138,7 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
             // 时间和当前时间不能超过 5 分钟
             Long currentTime = System.currentTimeMillis() / 1000;
             final Long FIVE_MINUTES = 60 * 5L;
+            log.info("timestamp:{}", timestamp);
             if ((currentTime - Long.parseLong(timestamp)) >= FIVE_MINUTES) {
                 return handleNoAuth(response);
             }
@@ -150,7 +151,7 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
             // 4. 请求的模拟接口是否存在，以及请求方法是否匹配
             InterfaceInfo interfaceInfo = null;
             try {
-                interfaceInfo = innerInterfaceInfoService.getInterfaceInfo(path, method);
+                interfaceInfo = innerInterfaceInfoService.getInterfaceInfo(requestPath, method);
             } catch (Exception e) {
                 log.error("getInterfaceInfo error", e);
             }

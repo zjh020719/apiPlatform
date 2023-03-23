@@ -1,8 +1,8 @@
 package com.xxfs.fsapibackend.exception;
 
-import com.xxfs.fsapibackend.common.BaseResponse;
-import com.xxfs.fsapibackend.common.ErrorCode;
-import com.xxfs.fsapibackend.common.ResultUtils;
+import com.xxfs.fsapicommon.common.BaseResponse;
+import com.xxfs.fsapicommon.common.ErrorCode;
+import com.xxfs.fsapicommon.common.ResultUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;

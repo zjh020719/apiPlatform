@@ -1,9 +1,9 @@
 package com.xxfs.fsapibackend.service.impl.inner;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.xxfs.fsapibackend.common.ErrorCode;
 import com.xxfs.fsapibackend.exception.BusinessException;
 import com.xxfs.fsapibackend.mapper.InterfaceInfoMapper;
+import com.xxfs.fsapicommon.common.ErrorCode;
 import com.xxfs.fsapicommon.model.entity.InterfaceInfo;
 import com.xxfs.fsapicommon.service.InnerInterfaceInfoService;
 import org.apache.commons.lang3.StringUtils;

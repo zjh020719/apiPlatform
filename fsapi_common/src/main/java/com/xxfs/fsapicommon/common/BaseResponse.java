@@ -1,4 +1,4 @@
-package com.xxfs.fsapibackend.common;
+package com.xxfs.fsapicommon.common;
 
 import lombok.Data;
 

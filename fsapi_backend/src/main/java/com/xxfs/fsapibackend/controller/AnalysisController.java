@@ -2,13 +2,13 @@ package com.xxfs.fsapibackend.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.xxfs.fsapibackend.annotation.AuthCheck;
-import com.xxfs.fsapibackend.common.BaseResponse;
-import com.xxfs.fsapibackend.common.ErrorCode;
-import com.xxfs.fsapibackend.common.ResultUtils;
 import com.xxfs.fsapibackend.exception.BusinessException;
 import com.xxfs.fsapibackend.mapper.UserInterfaceInfoMapper;
 import com.xxfs.fsapibackend.model.vo.InterfaceInfoVO;
 import com.xxfs.fsapibackend.service.InterfaceInfoService;
+import com.xxfs.fsapicommon.common.BaseResponse;
+import com.xxfs.fsapicommon.common.ErrorCode;
+import com.xxfs.fsapicommon.common.ResultUtils;
 import com.xxfs.fsapicommon.model.entity.InterfaceInfo;
 import com.xxfs.fsapicommon.model.entity.UserInterfaceInfo;
 import lombok.extern.slf4j.Slf4j;
