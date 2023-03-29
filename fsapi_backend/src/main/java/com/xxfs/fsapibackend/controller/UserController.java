@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,19 +44,40 @@ public class UserController {
      * @return
      */
     @PostMapping("/register")
-    public BaseResponse<Long> userRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
+    public BaseResponse<String> userRegister(@RequestBody UserRegisterRequest userRegisterRequest) throws IOException {
         if (userRegisterRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         String userAccount = userRegisterRequest.getUserAccount();
         String userPassword = userRegisterRequest.getUserPassword();
-        String checkPassword = userRegisterRequest.getCheckPassword();
-        if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword)) {
+        if (StringUtils.isAnyBlank(userAccount, userPassword)) {
             return ResultUtils.error(50000, "表单填写不完整");
         }
-        long result = userService.userRegister(userAccount, userPassword, checkPassword);
-        return ResultUtils.success(result);
+
+        return userService.newUserRegister(userAccount, userPassword);
     }
+
+
+//    /**
+//     * 用户注册
+//     *
+//     * @param userRegisterRequest
+//     * @return
+//     */
+//    @PostMapping("/register")
+//    public BaseResponse<Long> userRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
+//        if (userRegisterRequest == null) {
+//            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+//        }
+//        String userAccount = userRegisterRequest.getUserAccount();
+//        String userPassword = userRegisterRequest.getUserPassword();
+//        String checkPassword = userRegisterRequest.getCheckPassword();
+//        if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword)) {
+//            return ResultUtils.error(50000, "表单填写不完整");
+//        }
+//        long result = userService.userRegister(userAccount, userPassword, checkPassword);
+//        return ResultUtils.success(result);
+//    }
 
     /**
      * 用户登录

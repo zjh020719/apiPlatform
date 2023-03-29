@@ -26,4 +26,22 @@
         status,method,userId,
         createTime,updateTime,isDelete
     </sql>
+    <select id="listAllByUserIdInterfaceInfoVos" resultType="com.xxfs.fsapibackend.model.vo.InterfaceInfoVO">
+        select ii.id,
+               ii.name,
+               ii.description,
+               ii.url,
+               ii.status,
+               ii.method,
+               ui.totalNum,
+               ui.leftNum
+        from yu_api.interface_info ii
+                 join yu_api.user_interface_info ui
+                      on ii.id = ui.interfaceInfoId
+        where ui.userid = #{userId}
+    </select>
+    <select id="searchIdList" resultType="java.lang.Long">
+        select ii.id
+        from yu_api.interface_info ii
+    </select>
 </mapper>

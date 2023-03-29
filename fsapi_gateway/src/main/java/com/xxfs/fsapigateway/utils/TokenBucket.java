@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
-class TokenBucket {
+public class TokenBucket {
     /**
      * 令牌桶的容量
      */

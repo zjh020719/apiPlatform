@@ -11,6 +11,7 @@ import com.xxfs.fsapicommon.service.InnerInterfaceInfoService;
 import com.xxfs.fsapicommon.service.InnerUserInterfaceInfoService;
 import com.xxfs.fsapicommon.service.InnerUserService;
 import com.xxfs.fsapigateway.utils.JWTUtils;
+import com.xxfs.fsapigateway.utils.TokenBucket;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -42,7 +43,7 @@ import java.util.List;
 @Slf4j
 @Component
 public class CustomGlobalFilter implements GlobalFilter, Ordered {
-
+    private final TokenBucket tokenBucket; // 容量为 100，每秒产生 10 个令牌
     @DubboReference
     private InnerUserService innerUserService;
 
@@ -55,6 +56,10 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
     private static final List<String> IP_WHITE_LIST = Arrays.asList("127.0.0.1");
 
     private static final String INTERFACE_HOST = "http://localhost:8123";
+
+    public CustomGlobalFilter() {
+        this.tokenBucket = new TokenBucket(50, 5);
+    }
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -104,6 +109,9 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
 
 
         if (requestPath.matches("^/api/interface.*")) {
+            if (!tokenBucket.tryAcquire(1)) {
+                return handleManyRequest(response);
+            }
             // 1. 请求日志
             requestPath = requestPath.replaceFirst("/api/interface", "");
             String method = request.getMethod().toString().toLowerCase();
@@ -238,6 +246,11 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
 
     public Mono<Void> handleNoAuth(ServerHttpResponse response) {
         response.setStatusCode(HttpStatus.FORBIDDEN);
+        return response.setComplete();
+    }
+
+    public Mono<Void> handleManyRequest(ServerHttpResponse response) {
+        response.setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
         return response.setComplete();
     }
 

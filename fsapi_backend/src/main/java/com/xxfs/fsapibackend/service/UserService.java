@@ -3,9 +3,11 @@ package com.xxfs.fsapibackend.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.xxfs.fsapibackend.model.vo.LoginVO;
+import com.xxfs.fsapicommon.common.BaseResponse;
 import com.xxfs.fsapicommon.model.entity.User;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 
 /**
  * 用户服务
@@ -31,7 +33,7 @@ public interface UserService extends IService<User> {
      * @param userPassword 用户密码
      * @return 新用户 id
      */
-    long newUserRegister(String userAccount, String userPassword);
+    BaseResponse<String> newUserRegister(String userAccount, String userPassword) throws IOException;
 
     /**
      * 修改用户accessKey
@@ -40,7 +42,7 @@ public interface UserService extends IService<User> {
      * @param userPassword 用户密码
      * @return 用户新accessKey
      */
-    long changeUserAccessKey(String userAccount, String userPassword);
+    LoginVO changeUserAccessKey(String userAccount, String userPassword);
 
     /**
      * 用户登录
