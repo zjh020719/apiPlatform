@@ -4,6 +4,7 @@ package com.xxfs.fsapibackend.controller;
 import com.google.gson.Gson;
 import com.xxfs.fsapibackend.model.vo.MeunListQueryResponse;
 import com.xxfs.fsapibackend.service.MeunListService;
+import com.xxfs.fsapiclientsdk.client.FsApiClient;
 import com.xxfs.fsapicommon.common.BaseResponse;
 import com.xxfs.fsapicommon.model.entity.User;
 import io.swagger.annotations.Api;
@@ -29,6 +30,9 @@ public class MeunListController {
     @Autowired
     private MeunListService adminMenuService;
 
+    @Autowired
+    private FsApiClient fsApiClient;
+
     /**
      * @return
      */
@@ -40,6 +44,5 @@ public class MeunListController {
         return adminMenuService.selectList(user.getUserRole());
 
     }
-
 
 }

@@ -23,9 +23,15 @@
     </sql>
     <select id="listTopInvokeInterfaceInfo" resultType="com.xxfs.fsapicommon.model.entity.UserInterfaceInfo">
         select interfaceInfoId, sum(totalNum) as totalNum
-        from user_interface_info
+        from yu_api.user_interface_info
         group by interfaceInfoId
         order by totalNum desc
         limit #{limit};
+    </select>
+    <select id="searchLeftNum" resultType="java.lang.Long">
+        select leftNum
+        from yu_api.user_interface_info
+        where userId = #{userId}
+          and interfaceInfoId = #{interfaceInfoId}
     </select>
 </mapper>

@@ -13,11 +13,19 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>fsapi_parent</name>
     <description>fsapi_parent</description>
-
+    <packaging>pom</packaging>
     <properties>
         <java.version>1.8</java.version>
     </properties>
-
+    <modules>
+        <module>fsapi_gateway</module>
+        <module>fsapi_backend</module>
+        <module>fsapi_client_sdk</module>
+        <module>fsapi_common</module>
+        <module>fsapi_interface</module>
+        <module>fsapi_mail_server</module>
+        <module>fsapi_school_crawler</module>
+    </modules>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>

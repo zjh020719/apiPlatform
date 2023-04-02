@@ -17,7 +17,6 @@ import com.xxfs.fsapibackend.service.UserService;
 import com.xxfs.fsapibackend.utils.JWTUtils;
 import com.xxfs.fsapicommon.common.BaseResponse;
 import com.xxfs.fsapicommon.common.ErrorCode;
-import com.xxfs.fsapicommon.common.MyThreadPool;
 import com.xxfs.fsapicommon.common.ResultUtils;
 import com.xxfs.fsapicommon.model.dto.StudentDTO;
 import com.xxfs.fsapicommon.model.entity.User;
@@ -27,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 
 import static com.xxfs.fsapicommon.constant.UserConstant.ADMIN_ROLE;
@@ -57,7 +58,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @DubboReference
     private StudentService studentService;
 
-    private final MyThreadPool threadPool = MyThreadPool.getInstance();
+    @Autowired
+    private ThreadPoolExecutor executor;
     @Resource
     private UserInterfaceInfoService userInterfaceInfoService;
     /**
@@ -173,7 +175,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             }
         }
         Long id = user.getId();
-        CompletableFuture.runAsync(() -> createUserInterfaceInfo(id), threadPool.getExecutorService()).exceptionally(ex -> {
+        CompletableFuture.runAsync(() -> createUserInterfaceInfo(id), executor).exceptionally(ex -> {
             log.error("创建用户接口信息时出错", ex);
             return null; // or throw a custom exception
         });
@@ -182,7 +184,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     private void createUserInterfaceInfo(long userId) {
-
         List<Long> idList = interfaceInfoMapper.searchIdList();
         List<UserInterfaceInfo> userInterfaceInfoList = idList.stream().map(id -> {
             UserInterfaceInfo userInterfaceInfo = new UserInterfaceInfo();

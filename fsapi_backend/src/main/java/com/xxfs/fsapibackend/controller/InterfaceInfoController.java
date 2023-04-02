@@ -220,13 +220,13 @@ public class InterfaceInfoController {
         if (oldInterfaceInfo == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
-        // 判断该接口是否可以调用
-        com.xxfs.fsapiclientsdk.model.User user = new com.xxfs.fsapiclientsdk.model.User();
-        user.setUsername("test");
-        String username = fsApiClient.getUsernameByPost(user);
-        if (StringUtils.isBlank(username)) {
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "接口验证失败");
-        }
+        // TODO 判断该接口是否可以调用
+//        com.xxfs.fsapiclientsdk.model.User user = new com.xxfs.fsapiclientsdk.model.User();
+//        user.setUsername("test");
+//        String username = fsApiClient.getUsernameByPost(user);
+//        if (StringUtils.isBlank(username)) {
+//            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "接口验证失败");
+//        }
         // 仅本人或管理员可修改
         InterfaceInfo interfaceInfo = new InterfaceInfo();
         interfaceInfo.setId(id);

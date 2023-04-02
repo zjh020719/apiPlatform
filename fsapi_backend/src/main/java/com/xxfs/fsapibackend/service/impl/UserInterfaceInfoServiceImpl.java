@@ -9,12 +9,16 @@ import com.xxfs.fsapicommon.common.ErrorCode;
 import com.xxfs.fsapicommon.model.entity.UserInterfaceInfo;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+
 /**
  *
  */
 @Service
 public class UserInterfaceInfoServiceImpl extends ServiceImpl<UserInterfaceInfoMapper, UserInterfaceInfo>
         implements UserInterfaceInfoService {
+    @Resource
+    private UserInterfaceInfoMapper userInterfaceInfoMapper;
 
     @Override
     public void validUserInterfaceInfo(UserInterfaceInfo userInterfaceInfo, boolean add) {
@@ -46,6 +50,16 @@ public class UserInterfaceInfoServiceImpl extends ServiceImpl<UserInterfaceInfoM
         updateWrapper.setSql("leftNum = leftNum - 1, totalNum = totalNum + 1");
         return this.update(updateWrapper);
     }
+
+    @Override
+    public boolean invokeLeftNum(long interfaceInfoId, long userId) {
+        // 判断
+        if (interfaceInfoId <= 0 || userId <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        return userInterfaceInfoMapper.searchLeftNum(interfaceInfoId, userId) >= 1;
+    }
+
 
 }
 

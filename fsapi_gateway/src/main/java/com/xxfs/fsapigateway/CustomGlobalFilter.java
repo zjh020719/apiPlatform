@@ -79,35 +79,6 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
                 log.error("getInvokeUser error", e);
             }
         }
-
-
-        if (!"/api/backend/user/login".equals(requestPath) && !"/api/backend/user/register".equals(requestPath) && !"/api/backend/user/logout".equals(requestPath)) {
-            String token = exchange.getRequest().getHeaders().getFirst("Authentication");
-            if (StringUtils.isBlank(token)) {
-                log.error("token为空");
-                //没有token
-                return handleNoAuth(response);
-            } else {
-                //有token
-                try {
-                    JWTUtils.verify(token, invokeUser.getSecretKey());
-                } catch (SignatureVerificationException e) {
-                    log.error("无效签名！ 错误 ->", e);
-                    return handleNoAuth(response);
-                } catch (TokenExpiredException e) {
-                    log.error("token过期！ 错误 ->", e);
-                    return handleNoAuth(response);
-                } catch (AlgorithmMismatchException e) {
-                    log.error("token算法不一致！ 错误 ->", e);
-                    return handleNoAuth(response);
-                } catch (Exception e) {
-                    log.error(e.getMessage(), e);
-                    return handleNoAuth(response);
-                }
-            }
-        }
-
-
         if (requestPath.matches("^/api/interface.*")) {
             if (!tokenBucket.tryAcquire(1)) {
                 return handleManyRequest(response);
@@ -167,11 +138,42 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
                 return handleNoAuth(response);
             }
             // todo 是否还有调用次数
+            if (!innerUserInterfaceInfoService.invokeLeftNum(interfaceInfo.getId(), invokeUser.getId())) {
+                return handleNoAuth(response);
+            }
             // 5. 请求转发，调用模拟接口 + 响应日志
             //        Mono<Void> filter = chain.filter(exchange);
             //        return filter;
             return handleResponse(exchange, chain, interfaceInfo.getId(), invokeUser.getId());
         }
+
+
+        if (!"/api/backend/user/login".equals(requestPath) && !"/api/backend/user/register".equals(requestPath) && !"/api/backend/user/logout".equals(requestPath)) {
+            String token = exchange.getRequest().getHeaders().getFirst("Authentication");
+            if (StringUtils.isBlank(token)) {
+                log.error("token为空");
+                //没有token
+                return handleNoAuth(response);
+            } else {
+                //有token
+                try {
+                    JWTUtils.verify(token, invokeUser.getSecretKey());
+                } catch (SignatureVerificationException e) {
+                    log.error("无效签名！ 错误 ->", e);
+                    return handleNoAuth(response);
+                } catch (TokenExpiredException e) {
+                    log.error("token过期！ 错误 ->", e);
+                    return handleNoAuth(response);
+                } catch (AlgorithmMismatchException e) {
+                    log.error("token算法不一致！ 错误 ->", e);
+                    return handleNoAuth(response);
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
+                    return handleNoAuth(response);
+                }
+            }
+        }
+
 
         return chain.filter(exchange);
     }

@@ -1,4 +1,4 @@
-package com.xxfs.fsapicommon.model.dto;
+package com.xxfs.fsapiclientsdk.model.dto;
 
 import lombok.Data;
 
@@ -19,4 +19,3 @@ public class StudentDTO implements Serializable {
 
     private String semester;
 }
-
