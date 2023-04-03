@@ -20,51 +20,68 @@ import static com.xxfs.fsapiclientsdk.utils.SignUtils.getHeaderMap;
  */
 @Slf4j
 public class SchoolCrawler {
-    public BaseResponse<Map> getCourse(StudentDTO studentDTO, String accessKey, String secretKey) {
+  public BaseResponse<Map> getCourse(StudentDTO studentDTO, String accessKey, String secretKey) {
 
-        String json = JSONUtil.toJsonStr(studentDTO);
-        HttpResponse httpResponse = HttpRequest.post(GATEWAY_HOST + "/api/interface/crawler/getCourse")
-                .addHeaders(getHeaderMap(json, accessKey, secretKey))
-                .body(json)
-                .execute();
-        String result = httpResponse.body();
-        Map map = JSONUtil.toBean(result, Map.class);
-        return ResultUtils.success(map);
-
+    String json = JSONUtil.toJsonStr(studentDTO);
+    HttpResponse httpResponse =
+            HttpRequest.post(GATEWAY_HOST + "/api/interface/crawler/getCourse")
+                    .addHeaders(getHeaderMap(json, accessKey, secretKey))
+                    .body(json)
+                    .execute();
+    String result = httpResponse.body();
+    try {
+      return JSONUtil.toBean(result, BaseResponse.class);
+    } catch (Exception exception) {
+      return ResultUtils.error(50000, result);
     }
+  }
 
-    public BaseResponse<Map> getStudentInfo(StudentDTO studentDTO, String accessKey, String secretKey) {
-        String json = JSONUtil.toJsonStr(studentDTO);
-        HttpResponse httpResponse = HttpRequest.post(GATEWAY_HOST + "/api/interface/crawler/getStudentInfo")
-                .addHeaders(getHeaderMap(json, accessKey, secretKey))
-                .body(json)
-                .execute();
-        String result = httpResponse.body();
-        Map map = JSONUtil.toBean(result, Map.class);
-        return ResultUtils.success(map);
+  public BaseResponse<Map> getStudentInfo(
+          StudentDTO studentDTO, String accessKey, String secretKey) {
+    String json = JSONUtil.toJsonStr(studentDTO);
+    HttpResponse httpResponse =
+            HttpRequest.post(GATEWAY_HOST + "/api/interface/crawler/getStudentInfo")
+                    .addHeaders(getHeaderMap(json, accessKey, secretKey))
+                    .body(json)
+                    .execute();
+    String result = httpResponse.body();
+    try {
+      return JSONUtil.toBean(result, BaseResponse.class);
+    } catch (Exception exception) {
+      return ResultUtils.error(50000, result);
     }
+  }
 
-    public BaseResponse<Map> getAttendance(StudentDTO studentDTO, String accessKey, String secretKey) {
-        String json = JSONUtil.toJsonStr(studentDTO);
-        HttpResponse httpResponse = HttpRequest.post(GATEWAY_HOST + "/api/interface/crawler/getAttendance")
-                .addHeaders(getHeaderMap(json, accessKey, secretKey))
-                .body(json)
-                .execute();
-        String result = httpResponse.body();
-        Map map = JSONUtil.toBean(result, Map.class);
-        return ResultUtils.success(map);
+  public BaseResponse<Map> getAttendance(
+          StudentDTO studentDTO, String accessKey, String secretKey) {
+    String json = JSONUtil.toJsonStr(studentDTO);
+    HttpResponse httpResponse =
+            HttpRequest.post(GATEWAY_HOST + "/api/interface/crawler/getAttendance")
+                    .addHeaders(getHeaderMap(json, accessKey, secretKey))
+                    .body(json)
+                    .execute();
+    String result = httpResponse.body();
+    try {
+      return JSONUtil.toBean(result, BaseResponse.class);
+    } catch (Exception exception) {
+      return ResultUtils.error(50000, result);
     }
+  }
 
-    public BaseResponse<List<RegularGradeVo>> getRegularGrade(StudentDTO studentDTO, String accessKey, String secretKey) {
-        String json = JSONUtil.toJsonStr(studentDTO);
-        HttpResponse httpResponse = HttpRequest.post(GATEWAY_HOST + "/api/interface/crawler/getRegularGrade")
-                .addHeaders(getHeaderMap(json, accessKey, secretKey))
-                .body(json)
-                .execute();
-        String result = httpResponse.body();
-        log.error("result:{}", result);
-        List map = JSONUtil.toBean(result, List.class);
-        return ResultUtils.success(map);
+  public BaseResponse<List<RegularGradeVo>> getRegularGrade(
+          StudentDTO studentDTO, String accessKey, String secretKey) {
+    String json = JSONUtil.toJsonStr(studentDTO);
+    HttpResponse httpResponse =
+            HttpRequest.post(GATEWAY_HOST + "/api/interface/crawler/getRegularGrade")
+                    .addHeaders(getHeaderMap(json, accessKey, secretKey))
+                    .body(json)
+                    .execute();
+    String result = httpResponse.body();
+    log.error("result:{}", result);
+    try {
+      return JSONUtil.toBean(result, BaseResponse.class);
+    } catch (Exception exception) {
+      return ResultUtils.error(50000, result);
     }
-
+  }
 }
